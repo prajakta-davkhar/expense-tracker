@@ -34,7 +34,7 @@ app.use(express.urlencoded({ extended: true }));
 // FRONTEND_URL environment variable वापरा (deployed frontend URL)
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL, // example: https://expense-tracker-1-g0db.onrender.com
+    origin: process.env.FRONTEND_URL || "https://expense-tracker-1-g0db.onrender.com ", // example: https://expense-tracker-1-g0db.onrender.com
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization"],

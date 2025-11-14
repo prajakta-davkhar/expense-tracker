@@ -24,7 +24,7 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   // 🔹 Directly use backend URL (no .env needed)
-  const API_URL = "https://expense-tracker-3a4k.onrender.com";
+  const API_URL = "https://expense-tracker-2-fcl1.onrender.com";
 
   // 🔹 Fetch notifications safely
   const fetchNotifications = async () => {

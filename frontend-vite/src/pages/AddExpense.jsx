@@ -17,7 +17,7 @@ export default function AddExpense() {
   const [loading, setLoading] = useState(false);
 
   // 🔹 Direct backend URL
-  const API_URL = "https://expense-tracker-3a4k.onrender.com";
+  const API_URL = "https://expense-tracker-2-fcl1.onrender.com";
 
   const handleChange = (e) => {
     const { name, value } = e.target;

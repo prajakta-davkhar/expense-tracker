@@ -12,7 +12,7 @@ export default function AddBudget() {
   const [loading, setLoading] = useState(false);
 
   // 🔹 Direct backend URL (no .env)
-  const API_URL = "https://expense-tracker-3a4k.onrender.com";
+  const API_URL = "https://expense-tracker-2-fcl1.onrender.com";
 
   // ➕ Add new budget
   const handleAddBudget = async (e) => {

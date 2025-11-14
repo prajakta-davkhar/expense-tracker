@@ -18,7 +18,7 @@ export default function Settings() {
   const [message, setMessage] = useState("");
 
   // 🔹 Use Render backend URL
-  const API_URL = "https://expense-tracker-3a4k.onrender.com";
+  const API_URL = "https://expense-tracker-2-fcl1.onrender.com";
 
   useEffect(() => {
     if (user) {

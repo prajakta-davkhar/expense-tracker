@@ -10,7 +10,7 @@ export default function Notifications() {
   const [loading, setLoading] = useState(true);
 
   // 🔹 Direct backend URL
-  const API_URL = "https://expense-tracker-3a4k.onrender.com";
+  const API_URL = "https://expense-tracker-2-fcl1.onrender.com";
 
   // Fetch notifications
   const fetchNotifications = async () => {

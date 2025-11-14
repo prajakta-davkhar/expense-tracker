@@ -25,7 +25,7 @@ export default function Dashboard() {
   const navigate = useNavigate();
 
   // 🔹 Direct backend URL
-  const API_URL = "https://expense-tracker-3a4k.onrender.com";
+  const API_URL = "https://expense-tracker-2-fcl1.onrender.com";
 
   const fetchData = async () => {
     setLoading(true);

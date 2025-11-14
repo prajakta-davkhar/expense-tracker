@@ -23,7 +23,7 @@ export default function Reports() {
   const [remainingBudget, setRemainingBudget] = useState(0);
 
   // 🔹 Direct backend URL
-  const API_URL = "https://expense-tracker-3a4k.onrender.com";
+  const API_URL = "https://expense-tracker-2-fcl1.onrender.com";
 
   useEffect(() => {
     const fetchData = async () => {
