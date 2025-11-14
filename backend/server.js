@@ -6,6 +6,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import connectDB from "./config/db.js";
 
+
 // Routes
 import expenseRoutes from "./routes/expenseRoutes.js";
 import budgetRoutes from "./routes/budgetRoutes.js";

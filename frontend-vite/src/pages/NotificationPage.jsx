@@ -9,7 +9,8 @@ export default function Notifications() {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const API_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+  // 🔹 Direct backend URL
+  const API_URL = "https://expense-tracker-3a4k.onrender.com";
 
   // Fetch notifications
   const fetchNotifications = async () => {
@@ -40,7 +41,6 @@ export default function Notifications() {
       await axios.patch(`${API_URL}/api/notifications/${id}/read`, {}, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      // Instant UI update without refetch
       setNotifications(prev =>
         prev.map(n => n._id === id ? { ...n, isRead: true } : n)
       );

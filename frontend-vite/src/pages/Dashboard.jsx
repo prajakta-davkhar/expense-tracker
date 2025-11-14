@@ -24,6 +24,9 @@ export default function Dashboard() {
 
   const navigate = useNavigate();
 
+  // 🔹 Direct backend URL
+  const API_URL = "https://expense-tracker-3a4k.onrender.com";
+
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -36,8 +39,8 @@ export default function Dashboard() {
       const headers = { Authorization: `Bearer ${token}` };
 
       const [expenseRes, budgetRes] = await Promise.all([
-        axios.get(`${import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"}/api/expenses`, { headers }),
-        axios.get(`${import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"}/api/budgets`, { headers }),
+        axios.get(`${API_URL}/api/expenses`, { headers }),
+        axios.get(`${API_URL}/api/budgets`, { headers }),
       ]);
 
       const exp = expenseRes.data.data || expenseRes.data.expenses || [];
@@ -96,7 +99,6 @@ export default function Dashboard() {
     return () => clearInterval(interval);
   }, []);
 
-  // Correct remaining budget calculation
   const totalBudget = budgets.reduce((acc, b) => acc + (b.limit || 0), 0);
   const spentBudget = expenses.reduce((acc, e) => acc + (e.amount || 0), 0);
   const remaining = totalBudget - spentBudget;

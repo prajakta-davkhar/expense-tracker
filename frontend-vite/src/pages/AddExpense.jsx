@@ -16,6 +16,9 @@ export default function AddExpense() {
   });
   const [loading, setLoading] = useState(false);
 
+  // 🔹 Direct backend URL
+  const API_URL = "https://expense-tracker-3a4k.onrender.com";
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -33,11 +36,8 @@ export default function AddExpense() {
       const token = localStorage.getItem("token");
 
       const res = await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"}/api/expenses`,
-        {
-          ...formData,
-          amount: Number(formData.amount),
-        },
+        `${API_URL}/api/expenses`,
+        { ...formData, amount: Number(formData.amount) },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 

@@ -11,6 +11,9 @@ export default function AddBudget() {
   const [limit, setLimit] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // 🔹 Direct backend URL (no .env)
+  const API_URL = "https://expense-tracker-3a4k.onrender.com";
+
   // ➕ Add new budget
   const handleAddBudget = async (e) => {
     e.preventDefault();
@@ -22,7 +25,7 @@ export default function AddBudget() {
       if (!token) return toast.error("❌ You must be logged in!");
 
       const res = await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"}/api/budgets`,
+        `${API_URL}/api/budgets`,
         { category, limit: Number(limit) },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -48,12 +51,11 @@ export default function AddBudget() {
       const token = localStorage.getItem("token");
       if (!token) return toast.error("❌ You must be logged in!");
 
-      const res = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"}/api/budgets`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const res = await axios.get(`${API_URL}/api/budgets`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-      const budgets = res.data.data || []; // ✅ backend return format: { success, data: [...] }
+      const budgets = res.data.data || [];
       if (!budgets.length) return toast.error("No budgets to export!");
 
       const workbook = new ExcelJS.Workbook();

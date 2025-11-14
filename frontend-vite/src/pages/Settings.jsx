@@ -17,6 +17,9 @@ export default function Settings() {
   const [previewImage, setPreviewImage] = useState(null);
   const [message, setMessage] = useState("");
 
+  // 🔹 Use Render backend URL
+  const API_URL = "https://expense-tracker-3a4k.onrender.com";
+
   useEffect(() => {
     if (user) {
       setFormData({
@@ -26,7 +29,7 @@ export default function Settings() {
         address: user.address || "",
         password: "",
       });
-      setPreviewImage(user.profileImage ? `http://localhost:5000${user.profileImage}` : null);
+      setPreviewImage(user.profileImage ? `${API_URL}${user.profileImage}` : null);
     }
   }, [user]);
 
@@ -54,20 +57,16 @@ export default function Settings() {
 
       if (profileImage) form.append("profileImage", profileImage);
 
-      const res = await axios.put(
-        "http://localhost:5000/api/auth/profile",
-        form,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const res = await axios.put(`${API_URL}/api/auth/profile`, form, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       if (res.data) {
         setUser(res.data); // update context
-        setPreviewImage(res.data.profileImage ? `http://localhost:5000${res.data.profileImage}` : null);
+        setPreviewImage(res.data.profileImage ? `${API_URL}${res.data.profileImage}` : null);
         setMessage("✅ Profile updated successfully!");
         setIsEditing(false);
       }
