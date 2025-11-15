@@ -24,6 +24,12 @@ export default function Dashboard() {
 
   const navigate = useNavigate();
 
+<<<<<<< HEAD
+=======
+  // 🔹 Direct backend URL
+  const API_URL = "https://expense-tracker-2-fcl1.onrender.com";
+
+>>>>>>> 0cd6a7852e09e5ef6e0c306267b763d02a1b39c9
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -36,8 +42,13 @@ export default function Dashboard() {
       const headers = { Authorization: `Bearer ${token}` };
 
       const [expenseRes, budgetRes] = await Promise.all([
+<<<<<<< HEAD
         axios.get(`${import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"}/api/expenses`, { headers }),
         axios.get(`${import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"}/api/budgets`, { headers }),
+=======
+        axios.get(`${API_URL}/api/expenses`, { headers }),
+        axios.get(`${API_URL}/api/budgets`, { headers }),
+>>>>>>> 0cd6a7852e09e5ef6e0c306267b763d02a1b39c9
       ]);
 
       const exp = expenseRes.data.data || expenseRes.data.expenses || [];
@@ -96,7 +107,10 @@ export default function Dashboard() {
     return () => clearInterval(interval);
   }, []);
 
+<<<<<<< HEAD
   // Correct remaining budget calculation
+=======
+>>>>>>> 0cd6a7852e09e5ef6e0c306267b763d02a1b39c9
   const totalBudget = budgets.reduce((acc, b) => acc + (b.limit || 0), 0);
   const spentBudget = expenses.reduce((acc, e) => acc + (e.amount || 0), 0);
   const remaining = totalBudget - spentBudget;

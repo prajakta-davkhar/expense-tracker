@@ -23,7 +23,12 @@ export default function Navbar() {
   const [error, setError] = useState("");
   const [mobileOpen, setMobileOpen] = useState(false);
 
+<<<<<<< HEAD
   const API_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+=======
+  // 🔹 Directly use backend URL (no .env needed)
+  const API_URL = "https://expense-tracker-2-fcl1.onrender.com";
+>>>>>>> 0cd6a7852e09e5ef6e0c306267b763d02a1b39c9
 
   // 🔹 Fetch notifications safely
   const fetchNotifications = async () => {
@@ -43,7 +48,14 @@ export default function Navbar() {
       setNotifications(fetched);
       setError("");
     } catch (err) {
+<<<<<<< HEAD
       console.error("🔴 Notification Fetch Error:", err.response?.data || err.message);
+=======
+      console.error(
+        "🔴 Notification Fetch Error:",
+        err.response?.data || err.message
+      );
+>>>>>>> 0cd6a7852e09e5ef6e0c306267b763d02a1b39c9
       setError("Failed to fetch notifications");
     }
   };

@@ -22,7 +22,12 @@ export default function Reports() {
   const [totalBudget, setTotalBudget] = useState(0);
   const [remainingBudget, setRemainingBudget] = useState(0);
 
+<<<<<<< HEAD
   const API_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+=======
+  // 🔹 Direct backend URL
+  const API_URL = "https://expense-tracker-2-fcl1.onrender.com";
+>>>>>>> 0cd6a7852e09e5ef6e0c306267b763d02a1b39c9
 
   useEffect(() => {
     const fetchData = async () => {
@@ -39,21 +44,30 @@ export default function Reports() {
           axios.get(`${API_URL}/api/budgets`, { headers }),
         ]);
 
+<<<<<<< HEAD
         // ✅ Backend structure check
+=======
+>>>>>>> 0cd6a7852e09e5ef6e0c306267b763d02a1b39c9
         const exp = expenseRes.data.data || expenseRes.data.expenses || [];
         const bud = budgetRes.data.data || budgetRes.data.budgets || [];
 
         setExpenses(exp);
         setBudgets(bud);
 
+<<<<<<< HEAD
         // ✅ Totals
+=======
+>>>>>>> 0cd6a7852e09e5ef6e0c306267b763d02a1b39c9
         const totalExp = exp.reduce((acc, e) => acc + (e.amount || 0), 0);
         const totalBud = bud.reduce((acc, b) => acc + (b.limit || 0), 0);
         setTotalSpent(totalExp);
         setTotalBudget(totalBud);
         setRemainingBudget(totalBud - totalExp);
 
+<<<<<<< HEAD
         // ✅ Chart data by month
+=======
+>>>>>>> 0cd6a7852e09e5ef6e0c306267b763d02a1b39c9
         const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
         const chart = months.map((m, i) => ({
           month: m,
@@ -77,7 +91,10 @@ export default function Reports() {
     fetchData();
   }, []);
 
+<<<<<<< HEAD
   // ✅ Excel download
+=======
+>>>>>>> 0cd6a7852e09e5ef6e0c306267b763d02a1b39c9
   const handleDownload = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -105,14 +122,20 @@ export default function Reports() {
     <div className="min-h-screen +bg-gradient-to-br from-blue-50 via-white to-blue-100 dark:from-gray-900 dark:to-gray-800 text-gray-900 dark:text-gray-100 p-6">
       <h1 className="text-4xl font-bold text-center mb-8">📑 Expense & Budget Reports</h1>
 
+<<<<<<< HEAD
       {/* Summary Stats */}
+=======
+>>>>>>> 0cd6a7852e09e5ef6e0c306267b763d02a1b39c9
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
         <StatCard title="Total Spent" value={`₹${totalSpent}`} color="red" />
         <StatCard title="Total Budget" value={`₹${totalBudget}`} color="blue" />
         <StatCard title="Remaining Budget" value={`₹${remainingBudget}`} color="green" />
       </div>
 
+<<<<<<< HEAD
       {/* Chart */}
+=======
+>>>>>>> 0cd6a7852e09e5ef6e0c306267b763d02a1b39c9
       <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-lg p-6 mb-10">
         <h2 className="text-2xl font-semibold mb-4 text-center">📊 Monthly Overview</h2>
         <ResponsiveContainer width="100%" height={350}>
@@ -128,7 +151,10 @@ export default function Reports() {
         </ResponsiveContainer>
       </div>
 
+<<<<<<< HEAD
       {/* Download Excel */}
+=======
+>>>>>>> 0cd6a7852e09e5ef6e0c306267b763d02a1b39c9
       <div className="text-center mb-12">
         <button
           onClick={handleDownload}
@@ -138,7 +164,10 @@ export default function Reports() {
         </button>
       </div>
 
+<<<<<<< HEAD
       {/* Recent Expenses Table */}
+=======
+>>>>>>> 0cd6a7852e09e5ef6e0c306267b763d02a1b39c9
       <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-lg p-6">
         <h2 className="text-2xl font-semibold mb-4 text-center">🧾 Recent Expenses</h2>
         <div className="overflow-x-auto">
@@ -168,7 +197,10 @@ export default function Reports() {
   );
 }
 
+<<<<<<< HEAD
 // ✅ StatCard Component
+=======
+>>>>>>> 0cd6a7852e09e5ef6e0c306267b763d02a1b39c9
 function StatCard({ title, value, color }) {
   const colors = { red: "text-red-500", green: "text-green-600", blue: "text-blue-600" };
   return (
