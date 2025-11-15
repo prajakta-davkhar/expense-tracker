@@ -54,7 +54,10 @@ export default function Reports() {
         setRemainingBudget(totalBud - totalExp);
 
         // Chart data by month
-        const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+        const months = [
+          "Jan","Feb","Mar","Apr","May","Jun",
+          "Jul","Aug","Sep","Oct","Nov","Dec"
+        ];
         const chart = months.map((m, i) => ({
           month: m,
           expenses: exp
