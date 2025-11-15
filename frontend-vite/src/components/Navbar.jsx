@@ -23,18 +23,15 @@ export default function Navbar() {
   const [error, setError] = useState("");
   const [mobileOpen, setMobileOpen] = useState(false);
 
-<<<<<<< HEAD
-  const API_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
-=======
-  // 🔹 Directly use backend URL (no .env needed)
-  const API_URL = "https://expense-tracker-2-fcl1.onrender.com";
->>>>>>> 0cd6a7852e09e5ef6e0c306267b763d02a1b39c9
+  // ✅ Use environment variable or fallback (NO localhost after deploy)
+  const API_URL = import.meta.env.VITE_API_BASE_URL;
 
-  // 🔹 Fetch notifications safely
+  // 🔹 Fetch notifications
   const fetchNotifications = async () => {
     if (!user) return;
     try {
       const token = localStorage.getItem("token");
+
       const res = await axios.get(`${API_URL}/api/notifications`, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -48,19 +45,12 @@ export default function Navbar() {
       setNotifications(fetched);
       setError("");
     } catch (err) {
-<<<<<<< HEAD
       console.error("🔴 Notification Fetch Error:", err.response?.data || err.message);
-=======
-      console.error(
-        "🔴 Notification Fetch Error:",
-        err.response?.data || err.message
-      );
->>>>>>> 0cd6a7852e09e5ef6e0c306267b763d02a1b39c9
       setError("Failed to fetch notifications");
     }
   };
 
-  // 🔹 Periodic fetch
+  // 🔹 Auto refresh notifications every 10 sec
   useEffect(() => {
     if (user) {
       fetchNotifications();
@@ -69,11 +59,9 @@ export default function Navbar() {
     }
   }, [user]);
 
-  const unreadCount = Array.isArray(notifications)
-    ? notifications.filter((n) => !n.read).length
-    : 0;
+  const unreadCount = notifications.filter((n) => !n.read).length;
 
-  // 🔹 Navigation items
+  // Navigation items
   const navItems = [
     { name: "Home", path: "/", icon: <Home size={20} /> },
     { name: "Dashboard", path: "/dashboard", icon: <Wallet size={20} /> },
@@ -101,10 +89,7 @@ export default function Navbar() {
   return (
     <nav className="bg-white dark:bg-gray-900 shadow-md sticky top-0 z-50">
       <div className="max-w-7xl mx-auto flex justify-between items-center px-6 py-4">
-        <Link
-          to="/"
-          className="text-2xl font-bold text-blue-600 dark:text-blue-400"
-        >
+        <Link to="/" className="text-2xl font-bold text-blue-600 dark:text-blue-400">
           Expense Tracker
         </Link>
 

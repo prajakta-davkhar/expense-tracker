@@ -2,20 +2,22 @@
 import React, { createContext, useState, useEffect } from "react";
 import axios from "axios";
 
-// ✅ Create AuthContext
 export const AuthContext = createContext();
 
-// ✅ AuthProvider Component
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // API URL
-  const API_URL = import.meta.env.VITE_API_BASE_URL
-    ? `${import.meta.env.VITE_API_BASE_URL.replace(/\/$/, "")}/api/auth`
-    : "http://localhost:5000/api/auth";
+  // ✅ API URL (NO LOCALHOST)
+  const baseURL = import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, "");
 
-  // Load user & token from localStorage on mount
+  if (!baseURL) {
+    console.error("❌ ERROR: VITE_API_BASE_URL is missing in .env");
+  }
+
+  const API_URL = `${baseURL}/api/auth`;
+
+  // Load user from localStorage
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     const storedToken = localStorage.getItem("token");
@@ -26,7 +28,7 @@ export const AuthProvider = ({ children }) => {
         setUser(parsedUser);
         axios.defaults.headers.common["Authorization"] = `Bearer ${storedToken}`;
       } catch (err) {
-        console.error("AuthContext parse error:", err);
+        console.error("⚠️ Failed to parse auth data:", err);
         localStorage.removeItem("user");
         localStorage.removeItem("token");
       }
@@ -34,12 +36,11 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
-  // ✅ Login
+  // LOGIN
   const login = async (email, password) => {
     try {
       const res = await axios.post(`${API_URL}/login`, { email, password });
       const { token, user } = res.data;
-      if (!token || !user) throw new Error("Invalid server response");
 
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
@@ -49,19 +50,15 @@ export const AuthProvider = ({ children }) => {
       return { success: true, user };
     } catch (err) {
       console.error("❌ Login error:", err.response?.data || err.message);
-      return {
-        success: false,
-        message: err.response?.data?.message || "Invalid email or password",
-      };
+      return { success: false, message: err.response?.data?.message || "Login failed" };
     }
   };
 
-  // ✅ Signup
+  // SIGNUP
   const signup = async (name, email, password) => {
     try {
       const res = await axios.post(`${API_URL}/register`, { name, email, password });
       const { token, user } = res.data;
-      if (!token || !user) throw new Error("Invalid server response");
 
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
@@ -71,14 +68,11 @@ export const AuthProvider = ({ children }) => {
       return { success: true, user };
     } catch (err) {
       console.error("❌ Signup error:", err.response?.data || err.message);
-      return {
-        success: false,
-        message: err.response?.data?.message || "Signup failed",
-      };
+      return { success: false, message: err.response?.data?.message || "Signup failed" };
     }
   };
 
-  // ✅ Logout
+  // LOGOUT
   const logout = () => {
     localStorage.removeItem("user");
     localStorage.removeItem("token");
@@ -86,7 +80,7 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
-  // ✅ Update user locally
+  // UPDATE USER
   const updateUser = (updatedUser) => {
     localStorage.setItem("user", JSON.stringify(updatedUser));
     setUser(updatedUser);

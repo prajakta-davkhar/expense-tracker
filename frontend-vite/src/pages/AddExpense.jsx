@@ -8,20 +8,18 @@ export default function AddExpense() {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
 
+  // ✅ Always use .env variable
+  const API_URL = import.meta.env.VITE_API_BASE_URL;
+
   const [formData, setFormData] = useState({
     category: "",
     amount: "",
     description: "",
     date: "",
   });
+
   const [loading, setLoading] = useState(false);
 
-<<<<<<< HEAD
-=======
-  // 🔹 Direct backend URL
-  const API_URL = "https://expense-tracker-2-fcl1.onrender.com";
-
->>>>>>> 0cd6a7852e09e5ef6e0c306267b763d02a1b39c9
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -39,16 +37,8 @@ export default function AddExpense() {
       const token = localStorage.getItem("token");
 
       const res = await axios.post(
-<<<<<<< HEAD
-        `${import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"}/api/expenses`,
-        {
-          ...formData,
-          amount: Number(formData.amount),
-        },
-=======
         `${API_URL}/api/expenses`,
         { ...formData, amount: Number(formData.amount) },
->>>>>>> 0cd6a7852e09e5ef6e0c306267b763d02a1b39c9
         { headers: { Authorization: `Bearer ${token}` } }
       );
 

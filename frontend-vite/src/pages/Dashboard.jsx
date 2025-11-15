@@ -24,12 +24,9 @@ export default function Dashboard() {
 
   const navigate = useNavigate();
 
-<<<<<<< HEAD
-=======
-  // 🔹 Direct backend URL
-  const API_URL = "https://expense-tracker-2-fcl1.onrender.com";
+  // ✅ Always load API URL from .env
+  const API_URL = import.meta.env.VITE_API_BASE_URL;
 
->>>>>>> 0cd6a7852e09e5ef6e0c306267b763d02a1b39c9
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -42,13 +39,8 @@ export default function Dashboard() {
       const headers = { Authorization: `Bearer ${token}` };
 
       const [expenseRes, budgetRes] = await Promise.all([
-<<<<<<< HEAD
-        axios.get(`${import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"}/api/expenses`, { headers }),
-        axios.get(`${import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"}/api/budgets`, { headers }),
-=======
         axios.get(`${API_URL}/api/expenses`, { headers }),
         axios.get(`${API_URL}/api/budgets`, { headers }),
->>>>>>> 0cd6a7852e09e5ef6e0c306267b763d02a1b39c9
       ]);
 
       const exp = expenseRes.data.data || expenseRes.data.expenses || [];
@@ -64,38 +56,39 @@ export default function Dashboard() {
       // This month expenses
       const now = new Date();
       const monthExp = exp
-        .filter(e => {
+        .filter((e) => {
           const d = new Date(e.date);
           return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
         })
         .reduce((acc, e) => acc + (e.amount || 0), 0);
       setThisMonthExpense(monthExp);
 
-      // Top category
+      // Top category calculation
       const categoryTotals = {};
-      exp.forEach(e => {
+      exp.forEach((e) => {
         categoryTotals[e.category] = (categoryTotals[e.category] || 0) + (e.amount || 0);
       });
       const topCat = Object.entries(categoryTotals).sort((a, b) => b[1] - a[1])[0];
       setTopCategory(topCat ? topCat[0] : "—");
 
-      // Monthly chart (expenses + budgets)
+      // Monthly chart data
       const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
       const chart = months.map((m, i) => ({
         month: m,
         expenses: exp
-          .filter(e => new Date(e.date).getMonth() === i && new Date(e.date).getFullYear() === now.getFullYear())
+          .filter((e) => new Date(e.date).getMonth() === i && new Date(e.date).getFullYear() === now.getFullYear())
           .reduce((acc, e) => acc + (e.amount || 0), 0),
         budgets: bud
-          .filter(b => new Date(b.createdAt).getMonth() === i && new Date(b.createdAt).getFullYear() === now.getFullYear())
+          .filter((b) => new Date(b.createdAt).getMonth() === i && new Date(b.createdAt).getFullYear() === now.getFullYear())
           .reduce((acc, b) => acc + (b.limit || 0), 0),
       }));
-      setChartData(chart);
 
+      setChartData(chart);
       setError("");
+
     } catch (err) {
       console.error("Dashboard fetch error:", err.response?.data || err.message);
-      setError(err.response?.data?.message || err.message || "Failed to fetch dashboard data");
+      setError(err.response?.data?.message || "Failed to fetch dashboard data");
     } finally {
       setLoading(false);
     }
@@ -107,10 +100,7 @@ export default function Dashboard() {
     return () => clearInterval(interval);
   }, []);
 
-<<<<<<< HEAD
-  // Correct remaining budget calculation
-=======
->>>>>>> 0cd6a7852e09e5ef6e0c306267b763d02a1b39c9
+  // Budget calculation
   const totalBudget = budgets.reduce((acc, b) => acc + (b.limit || 0), 0);
   const spentBudget = expenses.reduce((acc, e) => acc + (e.amount || 0), 0);
   const remaining = totalBudget - spentBudget;
@@ -121,16 +111,23 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen +bg-gradient-to-br from-blue-50 via-white to-blue-100 dark:from-gray-900 dark:to-gray-800 text-gray-900 dark:text-gray-100 transition-all duration-300">
       <section className="container mx-auto px-6 py-12 lg:py-20">
+
         {/* HEADER */}
         <div className="flex flex-col lg:flex-row justify-between items-center mb-10">
           <h1 className="text-4xl lg:text-5xl font-extrabold text-center lg:text-left">
             📊 Dashboard
           </h1>
           <div className="flex gap-4 mt-4 lg:mt-0">
-            <Link to="/add-expense" className="bg-blue-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-blue-700 transition-all">
+            <Link
+              to="/add-expense"
+              className="bg-blue-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-blue-700 transition-all"
+            >
               ➕ Add Expense
             </Link>
-            <button onClick={fetchData} className="bg-gray-300 dark:bg-gray-700 px-4 py-3 rounded hover:bg-gray-400 dark:hover:bg-gray-600 transition">
+            <button
+              onClick={fetchData}
+              className="bg-gray-300 dark:bg-gray-700 px-4 py-3 rounded hover:bg-gray-400 dark:hover:bg-gray-600 transition"
+            >
               🔄 Refresh
             </button>
           </div>
@@ -175,8 +172,8 @@ export default function Dashboard() {
               </thead>
               <tbody>
                 {expenses
-                  .sort((a,b) => new Date(b.date) - new Date(a.date))
-                  .slice(0,5)
+                  .sort((a, b) => new Date(b.date) - new Date(a.date))
+                  .slice(0, 5)
                   .map((item, i) => (
                     <tr key={i} className="border-b border-gray-200 dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-gray-800 transition">
                       <td className="py-3 px-4">{new Date(item.date).toLocaleDateString()}</td>
@@ -189,12 +186,12 @@ export default function Dashboard() {
             </table>
           </div>
         </div>
+
       </section>
     </div>
   );
 }
 
-// STAT CARD COMPONENT
 const colors = {
   blue: "text-blue-600",
   green: "text-green-600",
