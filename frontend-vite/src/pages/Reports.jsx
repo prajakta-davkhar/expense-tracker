@@ -22,7 +22,6 @@ export default function Reports() {
   const [totalBudget, setTotalBudget] = useState(0);
   const [remainingBudget, setRemainingBudget] = useState(0);
 
-  // Use environment variable for backend URL
   const API_URL = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
@@ -46,18 +45,17 @@ export default function Reports() {
         setExpenses(exp);
         setBudgets(bud);
 
-        // Totals
         const totalExp = exp.reduce((acc, e) => acc + (e.amount || 0), 0);
         const totalBud = bud.reduce((acc, b) => acc + (b.limit || 0), 0);
         setTotalSpent(totalExp);
         setTotalBudget(totalBud);
         setRemainingBudget(totalBud - totalExp);
 
-        // Chart data by month
         const months = [
-          "Jan","Feb","Mar","Apr","May","Jun",
-          "Jul","Aug","Sep","Oct","Nov","Dec"
+          "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+          "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
         ];
+
         const chart = months.map((m, i) => ({
           month: m,
           expenses: exp
@@ -67,8 +65,8 @@ export default function Reports() {
             .filter(b => new Date(b.createdAt).getMonth() === i)
             .reduce((acc, b) => acc + (b.limit || 0), 0),
         }));
-        setChartData(chart);
 
+        setChartData(chart);
       } catch (err) {
         console.error("Error fetching report data:", err);
         setError(err.response?.data?.message || "Failed to fetch report data");
@@ -100,12 +98,23 @@ export default function Reports() {
     }
   };
 
-  if (loading) return <div className="text-center mt-20 text-xl font-semibold">Loading Reports...</div>;
-  if (error) return <div className="text-center mt-20 text-red-600 font-semibold">{error}</div>;
+  if (loading)
+    return (
+      <div className="text-center mt-20 text-xl font-semibold">
+        Loading Reports...
+      </div>
+    );
+
+  if (error)
+    return (
+      <div className="text-center mt-20 text-red-600 font-semibold">{error}</div>
+    );
 
   return (
-    <div className="min-h-screen +bg-gradient-to-br from-blue-50 via-white to-blue-100 dark:from-gray-900 dark:to-gray-800 text-gray-900 dark:text-gray-100 p-6">
-      <h1 className="text-4xl font-bold text-center mb-8">📑 Expense & Budget Reports</h1>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100 dark:from-gray-900 dark:to-gray-800 text-gray-900 dark:text-gray-100 p-6">
+      <h1 className="text-4xl font-bold text-center mb-8">
+        📑 Expense & Budget Reports
+      </h1>
 
       {/* Summary Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
@@ -155,7 +164,10 @@ export default function Reports() {
             </thead>
             <tbody>
               {expenses.slice(-10).reverse().map((item, i) => (
-                <tr key={i} className="border-b border-gray-200 dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-gray-800 transition">
+                <tr
+                  key={i}
+                  className="border-b border-gray-200 dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-gray-800 transition"
+                >
                   <td className="py-3 px-4">{new Date(item.date).toLocaleDateString()}</td>
                   <td className="py-3 px-4">{item.category}</td>
                   <td className="py-3 px-4">{item.description || "—"}</td>
@@ -170,7 +182,6 @@ export default function Reports() {
   );
 }
 
-// StatCard Component
 function StatCard({ title, value, color }) {
   const colors = { red: "text-red-500", green: "text-green-600", blue: "text-blue-600" };
   return (
