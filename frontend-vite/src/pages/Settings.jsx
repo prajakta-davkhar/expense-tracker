@@ -81,9 +81,66 @@ export default function Settings() {
     }
   };
 
+  if (!user) return <p className="text-center mt-10">Please login to access settings</p>;
+
   return (
     <div className="max-w-2xl mx-auto p-8 bg-white dark:bg-gray-900 rounded-2xl shadow-lg mt-10">
-      {/* UI same as before */}
+      <h1 className="text-2xl font-bold mb-6 text-center">⚙️ Settings</h1>
+
+      {message && <p className="text-center mb-4">{message}</p>}
+
+      <div className="flex flex-col gap-4">
+        {/* Profile Image */}
+        <div className="flex flex-col items-center">
+          {previewImage && (
+            <img
+              src={previewImage}
+              alt="Profile"
+              className="w-24 h-24 rounded-full mb-2 object-cover"
+            />
+          )}
+          <input type="file" onChange={handleImageChange} />
+        </div>
+
+        {/* Form Fields */}
+        {["name", "email", "phone", "address", "password"].map((field) => (
+          <input
+            key={field}
+            type={field === "password" ? "password" : "text"}
+            name={field}
+            value={formData[field]}
+            onChange={handleChange}
+            disabled={!isEditing}
+            placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
+            className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500"
+          />
+        ))}
+
+        {/* Action Buttons */}
+        <div className="flex justify-between mt-4">
+          {isEditing ? (
+            <button
+              onClick={handleSave}
+              className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
+            >
+              <Save size={16} /> Save
+            </button>
+          ) : (
+            <button
+              onClick={() => setIsEditing(true)}
+              className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+            >
+              <Edit3 size={16} /> Edit
+            </button>
+          )}
+          <button
+            onClick={logout}
+            className="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700"
+          >
+            <LogOut size={16} /> Logout
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
