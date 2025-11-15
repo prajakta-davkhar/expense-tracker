@@ -5,7 +5,7 @@ import { LogOut, Edit3, Save } from "lucide-react";
 
 export default function Settings() {
   const { user, setUser, logout } = useContext(AuthContext);
-  const API_URL = import.meta.env.VITE_API_BASE_URL; // backend URL from env
+  const API_URL = import.meta.env.VITE_API_BASE_URL;
 
   const [formData, setFormData] = useState({
     name: "",
@@ -14,17 +14,17 @@ export default function Settings() {
     address: "",
     password: "",
   });
-
   const [isEditing, setIsEditing] = useState(false);
   const [profileImage, setProfileImage] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
   const [message, setMessage] = useState("");
 
+  // Load user data on mount
   useEffect(() => {
     if (user) {
       setFormData({
         name: user.name || "",
-        email: user.email || "",
+        email: user.email || "", // email prefilled
         phone: user.phone || "",
         address: user.address || "",
         password: "",
@@ -52,7 +52,7 @@ export default function Settings() {
 
       const form = new FormData();
       for (const key in formData) {
-        if (key === "password" && !formData[key]) continue;
+        if (key === "password" && !formData[key]) continue; // skip empty password
         if (formData[key]) form.append(key, formData[key]);
       }
       if (profileImage) form.append("profileImage", profileImage);
@@ -89,21 +89,19 @@ export default function Settings() {
     <div className="max-w-2xl mx-auto p-8 bg-white dark:bg-gray-900 rounded-2xl shadow-lg mt-10">
       <h1 className="text-3xl font-bold text-center text-blue-600 mb-6">My Profile</h1>
 
+      {message && <p className="text-center mb-4 font-medium text-gray-700 dark:text-gray-200">{message}</p>}
+
       <div className="flex flex-col items-center mb-6">
+        {/* Profile Image */}
         <div className="relative">
           <img
             src={previewImage || "https://via.placeholder.com/120"}
             alt="Profile"
-            className="w-32 h-32 rounded-full object-cover border-4 border-blue-500 cursor-pointer"
+            className="w-32 h-32 rounded-full object-cover border-4 border-blue-500"
           />
           {isEditing && (
             <label className="absolute bottom-0 right-0 bg-blue-600 p-2 rounded-full cursor-pointer">
-              <input
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={handleImageChange}
-              />
+              <input type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
               <Edit3 size={18} color="white" />
             </label>
           )}
@@ -111,25 +109,68 @@ export default function Settings() {
       </div>
 
       <div className="space-y-4">
-        {["name", "email", "phone", "address", "password"].map((field) => (
-          <div key={field}>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 capitalize">
-              {field}
-            </label>
-            <input
-              type={field === "password" ? "password" : "text"}
-              name={field}
-              value={formData[field]}
-              onChange={handleChange}
-              disabled={field === "email" || !isEditing}
-              className={`w-full mt-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-800 dark:text-white ${
-                field === "email" ? "bg-gray-100 cursor-not-allowed" : ""
-              }`}
-            />
-          </div>
-        ))}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Name</label>
+          <input
+            type="text"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            disabled={!isEditing}
+            className="w-full mt-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-800 dark:text-white"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
+          <input
+            type="email"
+            name="email"
+            value={formData.email}
+            disabled
+            className="w-full mt-1 p-2 border rounded-lg bg-gray-100 cursor-not-allowed dark:bg-gray-800 dark:text-gray-300"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Phone</label>
+          <input
+            type="text"
+            name="phone"
+            value={formData.phone}
+            onChange={handleChange}
+            disabled={!isEditing}
+            className="w-full mt-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-800 dark:text-white"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Address</label>
+          <input
+            type="text"
+            name="address"
+            value={formData.address}
+            onChange={handleChange}
+            disabled={!isEditing}
+            className="w-full mt-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-800 dark:text-white"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">New Password</label>
+          <input
+            type="password"
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
+            disabled={!isEditing}
+            placeholder="Leave blank to keep old"
+            className="w-full mt-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-800 dark:text-white"
+          />
+        </div>
       </div>
 
+      {/* Buttons */}
       <div className="flex justify-between mt-6">
         {!isEditing ? (
           <button
@@ -146,7 +187,6 @@ export default function Settings() {
             <Save size={18} /> Save
           </button>
         )}
-
         <button
           onClick={logout}
           className="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700"
@@ -154,12 +194,6 @@ export default function Settings() {
           <LogOut size={18} /> Logout
         </button>
       </div>
-
-      {message && (
-        <p className="mt-4 text-center text-sm text-gray-600 dark:text-gray-400">
-          {message}
-        </p>
-      )}
     </div>
   );
 }

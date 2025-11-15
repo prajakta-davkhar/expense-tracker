@@ -111,7 +111,7 @@ export default function Reports() {
     );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100 dark:from-gray-900 dark:to-gray-800 text-gray-900 dark:text-gray-100 p-6">
+    <div className="min-h-screen +bg-gradient-to-br from-blue-50 via-white to-blue-100 dark:from-gray-900 dark:to-gray-800 text-gray-900 dark:text-gray-100 p-6">
       <h1 className="text-4xl font-bold text-center mb-8">
         📑 Expense & Budget Reports
       </h1>
