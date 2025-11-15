@@ -11,7 +11,6 @@ export default function Notifications() {
 
   const API_URL = import.meta.env.VITE_API_BASE_URL;
 
-  // Fetch notifications
   const fetchNotifications = async () => {
     if (!user) return;
     setLoading(true);
@@ -22,7 +21,7 @@ export default function Notifications() {
       });
       setNotifications(res.data.data || []);
     } catch (err) {
-      console.error("❌ Fetch error:", err.response?.data || err.message);
+      console.error("❌ Fetch error:", err);
       toast.error("Failed to fetch notifications");
     } finally {
       setLoading(false);
@@ -33,71 +32,84 @@ export default function Notifications() {
     if (user) fetchNotifications();
   }, [user]);
 
-  // Mark single notification as read
   const markAsRead = async (id) => {
+    setNotifications(prev =>
+      prev.map(n => n._id === id ? { ...n, isRead: true } : n)
+    ); // Optimistic UI
     try {
       const token = localStorage.getItem("token");
       await axios.patch(`${API_URL}/api/notifications/${id}/read`, {}, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setNotifications(prev =>
-        prev.map(n => n._id === id ? { ...n, isRead: true } : n)
-      );
     } catch (err) {
       console.error(err);
       toast.error("Failed to mark as read");
+      fetchNotifications(); // rollback
     }
   };
 
-  // Delete single notification
   const deleteNotification = async (id) => {
+    setNotifications(prev => prev.filter(n => n._id !== id));
     try {
       const token = localStorage.getItem("token");
       await axios.delete(`${API_URL}/api/notifications/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setNotifications(prev => prev.filter(n => n._id !== id));
     } catch (err) {
       console.error(err);
       toast.error("Failed to delete notification");
+      fetchNotifications(); // rollback
     }
   };
 
-  // Mark all as read
   const markAllRead = async () => {
+    setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
     try {
       const token = localStorage.getItem("token");
       await axios.patch(`${API_URL}/api/notifications/read-all`, {}, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+      toast.success("All notifications marked as read!");
     } catch (err) {
       console.error(err);
       toast.error("Failed to mark all as read");
+      fetchNotifications(); // rollback
     }
   };
 
-  // Clear all notifications
   const clearAll = async () => {
+    setNotifications([]);
     try {
       const token = localStorage.getItem("token");
       await axios.delete(`${API_URL}/api/notifications/clear-all`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setNotifications([]);
+      toast.success("All notifications cleared!");
     } catch (err) {
       console.error(err);
       toast.error("Failed to clear notifications");
+      fetchNotifications(); // rollback
     }
   };
 
-  if (!user) return <p className="text-center mt-10">⚠ Please login to view notifications.</p>;
-  if (loading) return <p className="text-center mt-10">Loading notifications...</p>;
+  if (!user)
+    return (
+      <p className="text-center mt-10 text-gray-600 dark:text-gray-300">
+        ⚠ Please login to view notifications.
+      </p>
+    );
+
+  if (loading)
+    return (
+      <p className="text-center mt-10 text-gray-600 dark:text-gray-300">
+        Loading notifications...
+      </p>
+    );
 
   return (
-    <div className="max-w-3xl mx-auto mt-10 p-6 bg-white dark:bg-gray-800 rounded-2xl shadow-lg">
+    <div className="max-w-3xl mx-auto mt-10 p-6 bg-white dark:bg-gray-800 rounded-2xl shadow-lg transition-colors duration-300">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold flex items-center gap-2 text-blue-600">
+        <h1 className="text-2xl font-bold flex items-center gap-2 text-blue-600 dark:text-blue-400">
           <Bell /> Notifications
         </h1>
         <div className="flex gap-3">
@@ -117,17 +129,19 @@ export default function Notifications() {
       </div>
 
       {notifications.length === 0 ? (
-        <p className="text-center text-gray-500">No notifications yet 🎉</p>
+        <p className="text-center text-gray-500 dark:text-gray-400">
+          No notifications yet 🎉
+        </p>
       ) : (
         <ul className="space-y-4">
           {notifications.map((n) => (
             <li
               key={n._id}
-              className={`flex justify-between items-center p-4 rounded-xl border ${
-                n.isRead
+              className={`flex justify-between items-center p-4 rounded-xl border transition-colors duration-300
+                ${n.isRead
                   ? "bg-gray-100 dark:bg-gray-700 text-gray-500"
                   : "bg-blue-50 dark:bg-blue-900 text-gray-800"
-              } transition`}
+                }`}
             >
               <p>{n.message}</p>
               <div className="flex gap-3">

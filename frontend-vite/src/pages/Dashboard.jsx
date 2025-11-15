@@ -1,120 +1,87 @@
-import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from "recharts";
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "recharts";
 
 export default function Dashboard() {
   const [expenses, setExpenses] = useState([]);
-  const [budgets, setBudgets] = useState([]);
   const [totalExpense, setTotalExpense] = useState(0);
   const [thisMonthExpense, setThisMonthExpense] = useState(0);
-  const [topCategory, setTopCategory] = useState("—");
+  const [topCategory, setTopCategory] = useState("-");
+  const [remaining, setRemaining] = useState(0);
   const [chartData, setChartData] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
 
-  const navigate = useNavigate();
-
-  // ✅ Always load API URL from .env
   const API_URL = import.meta.env.VITE_API_BASE_URL;
 
   const fetchData = async () => {
-    setLoading(true);
     try {
       const token = localStorage.getItem("token");
-      if (!token) {
-        navigate("/login");
-        return;
-      }
+      if (!token) return;
 
       const headers = { Authorization: `Bearer ${token}` };
 
       const [expenseRes, budgetRes] = await Promise.all([
-        axios.get(`${API_URL}/api/expenses`, { headers }),
-        axios.get(`${API_URL}/api/budgets`, { headers }),
+        fetch(`${API_URL}/api/expenses`, { headers }).then(res => res.json()),
+        fetch(`${API_URL}/api/budgets`, { headers }).then(res => res.json()),
       ]);
 
-      const exp = expenseRes.data.data || expenseRes.data.expenses || [];
-      const bud = budgetRes.data.data || budgetRes.data.budgets || [];
+      const exp = expenseRes.data || [];
+      const bud = budgetRes.data || [];
 
       setExpenses(exp);
-      setBudgets(bud);
 
-      // Total expenses
+      // Total expense
       const total = exp.reduce((acc, e) => acc + (e.amount || 0), 0);
       setTotalExpense(total);
 
-      // This month expenses
-      const now = new Date();
-      const monthExp = exp
-        .filter((e) => {
-          const d = new Date(e.date);
-          return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
-        })
+      // This month expense
+      const currentMonth = new Date().getMonth();
+      const monthTotal = exp
+        .filter(e => new Date(e.date).getMonth() === currentMonth)
         .reduce((acc, e) => acc + (e.amount || 0), 0);
-      setThisMonthExpense(monthExp);
+      setThisMonthExpense(monthTotal);
 
-      // Top category calculation
+      // Top category
       const categoryTotals = {};
-      exp.forEach((e) => {
+      exp.forEach(e => {
         categoryTotals[e.category] = (categoryTotals[e.category] || 0) + (e.amount || 0);
       });
       const topCat = Object.entries(categoryTotals).sort((a, b) => b[1] - a[1])[0];
-      setTopCategory(topCat ? topCat[0] : "—");
+      setTopCategory(topCat ? topCat[0] : "-");
 
-      // Monthly chart data
-      const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+      // Remaining budget
+      const totalBudget = bud.reduce((acc, b) => acc + (b.limit || 0), 0);
+      setRemaining(totalBudget - total);
+
+      // Chart data
+      const months = [
+        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+      ];
       const chart = months.map((m, i) => ({
         month: m,
         expenses: exp
-          .filter((e) => new Date(e.date).getMonth() === i && new Date(e.date).getFullYear() === now.getFullYear())
+          .filter(e => new Date(e.date).getMonth() === i)
           .reduce((acc, e) => acc + (e.amount || 0), 0),
         budgets: bud
-          .filter((b) => new Date(b.createdAt).getMonth() === i && new Date(b.createdAt).getFullYear() === now.getFullYear())
+          .filter(b => new Date(b.createdAt).getMonth() === i)
           .reduce((acc, b) => acc + (b.limit || 0), 0),
       }));
-
       setChartData(chart);
-      setError("");
-
     } catch (err) {
-      console.error("Dashboard fetch error:", err.response?.data || err.message);
-      setError(err.response?.data?.message || "Failed to fetch dashboard data");
-    } finally {
-      setLoading(false);
+      console.error("Dashboard fetch error:", err);
     }
   };
 
   useEffect(() => {
     fetchData();
-    const interval = setInterval(fetchData, 10000);
-    return () => clearInterval(interval);
   }, []);
-
-  // Budget calculation
-  const totalBudget = budgets.reduce((acc, b) => acc + (b.limit || 0), 0);
-  const spentBudget = expenses.reduce((acc, e) => acc + (e.amount || 0), 0);
-  const remaining = totalBudget - spentBudget;
-
-  if (loading) return <p className="text-center mt-20">Loading dashboard...</p>;
-  if (error) return <p className="text-center mt-20 text-red-600">{error}</p>;
 
   return (
     <div className="min-h-screen +bg-gradient-to-br from-blue-50 via-white to-blue-100 dark:from-gray-900 dark:to-gray-800 text-gray-900 dark:text-gray-100 transition-all duration-300">
       <section className="container mx-auto px-6 py-12 lg:py-20">
-
         {/* HEADER */}
         <div className="flex flex-col lg:flex-row justify-between items-center mb-10">
-          <h1 className="text-4xl lg:text-5xl font-extrabold text-center lg:text-left">
+          <h1 className="text-4xl lg:text-5xl font-extrabold text-center lg:text-left dark:text-gray-100">
             📊 Dashboard
           </h1>
           <div className="flex gap-4 mt-4 lg:mt-0">
@@ -143,12 +110,12 @@ export default function Dashboard() {
 
         {/* CHART */}
         <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-lg p-8 mb-12">
-          <h2 className="text-2xl font-semibold mb-4 text-center">📈 Monthly Overview</h2>
+          <h2 className="text-2xl font-semibold mb-4 text-center dark:text-gray-100">📈 Monthly Overview</h2>
           <ResponsiveContainer width="100%" height={320}>
             <BarChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
-              <YAxis />
+              <XAxis dataKey="month" stroke="#4B5563" />
+              <YAxis stroke="#4B5563" />
               <Tooltip />
               <Legend />
               <Bar dataKey="expenses" fill="#2563eb" name="Expenses" barSize={45} radius={[10,10,0,0]} />
@@ -159,7 +126,7 @@ export default function Dashboard() {
 
         {/* RECENT EXPENSES */}
         <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-lg p-8">
-          <h2 className="text-2xl font-semibold mb-6 text-center">🧾 Recent Expenses</h2>
+          <h2 className="text-2xl font-semibold mb-6 text-center dark:text-gray-100">🧾 Recent Expenses</h2>
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
@@ -186,24 +153,29 @@ export default function Dashboard() {
             </table>
           </div>
         </div>
-
       </section>
     </div>
   );
 }
 
-const colors = {
-  blue: "text-blue-600",
-  green: "text-green-600",
-  red: "text-red-500",
-  orange: "text-orange-500",
-};
-
+// STAT CARD COMPONENT
 function StatCard({ title, value, color }) {
+  const lightColors = {
+    blue: "bg-blue-100 text-blue-800",
+    green: "bg-green-100 text-green-800",
+    red: "bg-red-100 text-red-800",
+    orange: "bg-orange-100 text-orange-800",
+  };
+  const darkColors = {
+    blue: "bg-blue-800 text-blue-100",
+    green: "bg-green-800 text-green-100",
+    red: "bg-red-800 text-red-100",
+    orange: "bg-orange-800 text-orange-100",
+  };
   return (
-    <div className="bg-white dark:bg-gray-900 rounded-xl p-6 shadow-lg text-center hover:scale-105 transition-transform">
+    <div className={`rounded-xl p-6 shadow-lg text-center transition-colors duration-300 hover:scale-105 transform ${lightColors[color]} dark:${darkColors[color]}`}>
       <h2 className="text-xl font-semibold mb-2">{title}</h2>
-      <p className={`text-3xl font-bold ${colors[color]}`}>{value}</p>
+      <p className="text-3xl font-bold">{value}</p>
     </div>
   );
 }

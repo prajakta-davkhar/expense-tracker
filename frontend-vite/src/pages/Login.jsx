@@ -38,53 +38,35 @@ export default function Login() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900 px-4">
-      <div className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg w-full max-w-md transition-all duration-300">
+    <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900 px-4 transition-colors duration-300">
+      <div className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg w-full max-w-md transition-colors duration-300">
         <h2 className="text-3xl font-extrabold text-center mb-6 text-blue-600 dark:text-blue-400">
           Welcome Back 👋
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Email */}
-          <div>
-            <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
-              Email
-            </label>
-            <input
-              name="email"
-              type="email"
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="Enter your email"
-              required
-              autoComplete="email"
-              className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none dark:bg-gray-700 dark:text-white"
-            />
-          </div>
+          {["email", "password"].map((field) => (
+            <div key={field}>
+              <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
+                {field.charAt(0).toUpperCase() + field.slice(1)}
+              </label>
+              <input
+                type={field}
+                name={field}
+                value={formData[field]}
+                onChange={handleChange}
+                placeholder={`Enter your ${field}`}
+                required
+                autoComplete={field === "email" ? "email" : "current-password"}
+                className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none dark:bg-gray-700 dark:text-white transition-colors duration-300"
+              />
+            </div>
+          ))}
 
-          {/* Password */}
-          <div>
-            <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
-              Password
-            </label>
-            <input
-              name="password"
-              type="password"
-              value={formData.password}
-              onChange={handleChange}
-              placeholder="Enter your password"
-              required
-              autoComplete="current-password"
-              className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none dark:bg-gray-700 dark:text-white"
-            />
-          </div>
-
-          {/* Error Message */}
           {error && (
             <p className="text-red-500 text-sm text-center font-medium mt-2">{error}</p>
           )}
 
-          {/* Submit Button */}
           <button
             type="submit"
             disabled={loading}
@@ -96,7 +78,6 @@ export default function Login() {
           </button>
         </form>
 
-        {/* Redirect to Signup */}
         <p className="text-center text-gray-600 dark:text-gray-400 text-sm mt-6">
           Don’t have an account?{" "}
           <button

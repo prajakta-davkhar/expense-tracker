@@ -16,7 +16,6 @@ export default function AddBudget() {
   const API_URL = import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, "");
   if (!API_URL) console.error("❌ ERROR: VITE_API_BASE_URL is missing in .env");
 
-  // ➕ Add new budget
   const handleAddBudget = async (e) => {
     e.preventDefault();
     if (!category || !limit) return toast.error("⚠️ Please fill all fields!");
@@ -46,7 +45,6 @@ export default function AddBudget() {
     }
   };
 
-  // 📥 Download budgets as Excel
   const handleDownloadExcel = async () => {
     if (!user) return toast.error("❌ You must be logged in!");
 

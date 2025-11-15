@@ -10,6 +10,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import { toast } from "react-hot-toast";
 
 export default function Reports() {
   const [expenses, setExpenses] = useState([]);
@@ -52,8 +53,8 @@ export default function Reports() {
         setRemainingBudget(totalBud - totalExp);
 
         const months = [
-          "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-          "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+          "Jan","Feb","Mar","Apr","May","Jun",
+          "Jul","Aug","Sep","Oct","Nov","Dec"
         ];
 
         const chart = months.map((m, i) => ({
@@ -92,29 +93,20 @@ export default function Reports() {
       a.download = "expense_report.xlsx";
       a.click();
       window.URL.revokeObjectURL(url);
+
+      toast.success("📥 Excel report downloaded!");
     } catch (err) {
       console.error("Error downloading report:", err);
-      alert("Failed to download report!");
+      toast.error("Failed to download report!");
     }
   };
 
-  if (loading)
-    return (
-      <div className="text-center mt-20 text-xl font-semibold">
-        Loading Reports...
-      </div>
-    );
-
-  if (error)
-    return (
-      <div className="text-center mt-20 text-red-600 font-semibold">{error}</div>
-    );
+  if (loading) return <div className="text-center mt-20 text-xl font-semibold">Loading Reports...</div>;
+  if (error) return <div className="text-center mt-20 text-red-600 font-semibold">{error}</div>;
 
   return (
-    <div className="min-h-screen +bg-gradient-to-br from-blue-50 via-white to-blue-100 dark:from-gray-900 dark:to-gray-800 text-gray-900 dark:text-gray-100 p-6">
-      <h1 className="text-4xl font-bold text-center mb-8">
-        📑 Expense & Budget Reports
-      </h1>
+    <div className="min-h-screen +bg-gradient-to-br from-blue-50 via-white to-blue-100 dark:from-gray-900 dark:to-gray-800 text-gray-900 dark:text-gray-100 p-6 transition-colors duration-300">
+      <h1 className="text-4xl font-bold text-center mb-8">📑 Expense & Budget Reports</h1>
 
       {/* Summary Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
@@ -124,13 +116,13 @@ export default function Reports() {
       </div>
 
       {/* Chart */}
-      <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-lg p-6 mb-10">
-        <h2 className="text-2xl font-semibold mb-4 text-center">📊 Monthly Overview</h2>
+      <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-lg p-6 mb-10 transition-colors duration-300">
+        <h2 className="text-2xl font-semibold mb-4 text-center dark:text-gray-100">📊 Monthly Overview</h2>
         <ResponsiveContainer width="100%" height={350}>
           <BarChart data={chartData}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="month" />
-            <YAxis />
+            <XAxis dataKey="month" stroke="#4B5563" />
+            <YAxis stroke="#4B5563" />
             <Tooltip />
             <Legend />
             <Bar dataKey="expenses" fill="#ef4444" name="Expenses" />
@@ -150,8 +142,8 @@ export default function Reports() {
       </div>
 
       {/* Recent Expenses Table */}
-      <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-lg p-6">
-        <h2 className="text-2xl font-semibold mb-4 text-center">🧾 Recent Expenses</h2>
+      <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-lg p-6 transition-colors duration-300">
+        <h2 className="text-2xl font-semibold mb-4 text-center dark:text-gray-100">🧾 Recent Expenses</h2>
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
@@ -183,9 +175,13 @@ export default function Reports() {
 }
 
 function StatCard({ title, value, color }) {
-  const colors = { red: "text-red-500", green: "text-green-600", blue: "text-blue-600" };
+  const colors = {
+    red: "text-red-500",
+    green: "text-green-600",
+    blue: "text-blue-600",
+  };
   return (
-    <div className="bg-white dark:bg-gray-900 rounded-xl p-6 shadow-lg text-center hover:scale-105 transition-transform">
+    <div className="bg-white dark:bg-gray-900 rounded-xl p-6 shadow-lg text-center hover:scale-105 transition-transform duration-300">
       <h2 className="text-xl font-semibold mb-2">{title}</h2>
       <p className={`text-3xl font-bold ${colors[color]}`}>{value}</p>
     </div>

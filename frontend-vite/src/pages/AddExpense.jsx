@@ -8,7 +8,6 @@ export default function AddExpense() {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  // ✅ Use environment variable
   const API_URL = import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, "");
   if (!API_URL) console.error("❌ VITE_API_BASE_URL missing in .env");
 
@@ -35,7 +34,7 @@ export default function AddExpense() {
 
     try {
       setLoading(true);
-      const token = localStorage.getItem("token"); // currently using localStorage
+      const token = localStorage.getItem("token");
 
       const res = await axios.post(
         `${API_URL}/api/expenses`,
@@ -55,7 +54,7 @@ export default function AddExpense() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
       <div className="bg-white dark:bg-gray-800 shadow-2xl rounded-3xl p-10 w-full max-w-lg">
         <h1 className="text-3xl font-extrabold mb-8 text-center text-blue-600">
           ➕ Add New Expense
@@ -125,7 +124,7 @@ export default function AddExpense() {
           <div className="flex justify-between mt-8">
             <Link
               to="/dashboard"
-              className="px-5 py-3 bg-gray-300 dark:bg-gray-700 rounded-xl hover:bg-gray-400 dark:hover:bg-gray-600"
+              className="px-5 py-3 bg-gray-300 dark:bg-gray-700 rounded-xl hover:bg-gray-400 dark:hover:bg-gray-600 transition"
             >
               ⬅ Back
             </Link>

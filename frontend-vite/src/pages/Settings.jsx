@@ -1,4 +1,3 @@
-// src/pages/Settings.jsx
 import React, { useState, useContext, useEffect } from "react";
 import { AuthContext } from "../context/AuthContext";
 import axios from "axios";
@@ -50,12 +49,13 @@ export default function Settings() {
       if (!token) throw new Error("User not authenticated");
 
       const form = new FormData();
-      for (const key in formData) {
-        if (key === "password" && !formData[key]) continue;
+      Object.keys(formData).forEach((key) => {
+        if (key === "password" && !formData[key]) return;
         if (formData[key]) form.append(key, formData[key]);
-      }
+      });
+
       if (profileImage) form.append("profileImage", profileImage);
-      form.append("theme", theme); // save theme to backend
+      form.append("theme", theme);
 
       const res = await axios.put(`${API_URL}/api/auth/profile`, form, {
         headers: {
@@ -65,7 +65,7 @@ export default function Settings() {
       });
 
       if (res.data) {
-        setUser(res.data.user); // update user context
+        setUser(res.data.user);
         setPreviewImage(res.data.user.profileImage ? `${API_URL}${res.data.user.profileImage}` : null);
         setMessage("✅ Profile updated successfully!");
         setIsEditing(false);
