@@ -28,30 +28,36 @@ import Signup from "./pages/Signup";
 // 🔹 PrivateRoute to protect authenticated routes
 function PrivateRoute({ children }) {
   const { user, loading } = useContext(AuthContext);
-  if (loading) return null; // Or show a spinner/loading
+  if (loading) return null; // Or add a spinner
   return user ? children : <Navigate to="/login" replace />;
 }
 
-// 🔹 Layout wrapper to handle Navbar/Footer visibility and theme
+// 🔹 Layout wrapper to handle Navbar/Footer visibility and global theme
 function LayoutWrapper() {
   const location = useLocation();
   const hideNavbarRoutes = ["/login", "/signup"];
   const hide = hideNavbarRoutes.includes(location.pathname);
 
+  const { user } = useContext(AuthContext);
+
   // Global theme state
   const [theme, setTheme] = useState("light");
 
-  // Load theme from localStorage
+  // Load theme from user data if logged in
   useEffect(() => {
-    const savedTheme = localStorage.getItem("theme");
-    if (savedTheme) setTheme(savedTheme);
-  }, []);
+    if (user?.theme) {
+      setTheme(user.theme);
+    } else {
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme) setTheme(savedTheme);
+    }
+  }, [user]);
 
-  // Apply theme to document root
+  // Apply theme class to <html> element
   useEffect(() => {
     document.documentElement.classList.remove(theme === "light" ? "dark" : "light");
     document.documentElement.classList.add(theme);
-    localStorage.setItem("theme", theme);
+    localStorage.setItem("theme", theme); // fallback for non-logged-in users
   }, [theme]);
 
   const toggleTheme = () => setTheme(theme === "light" ? "dark" : "light");
@@ -66,13 +72,13 @@ function LayoutWrapper() {
 
       <main className="flex-1 p-6">
         <Routes>
-          {/* Public routes */}
+          {/* Public Routes */}
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
 
-          {/* Protected routes */}
+          {/* Protected Routes */}
           <Route
             path="/dashboard"
             element={
@@ -109,7 +115,7 @@ function LayoutWrapper() {
             path="/settings"
             element={
               <PrivateRoute>
-                <Settings toggleTheme={toggleTheme} currentTheme={theme} />
+                <Settings theme={theme} setTheme={setTheme} />
               </PrivateRoute>
             }
           />
@@ -125,7 +131,7 @@ function LayoutWrapper() {
           {/* Redirect old auth path */}
           <Route path="/auth" element={<Navigate to="/login" replace />} />
 
-          {/* 404 fallback */}
+          {/* 404 Fallback */}
           <Route
             path="*"
             element={

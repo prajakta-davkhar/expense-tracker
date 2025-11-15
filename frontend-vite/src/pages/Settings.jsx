@@ -20,7 +20,7 @@ export default function Settings({ theme, setTheme }) {
   const [previewImage, setPreviewImage] = useState(null);
   const [message, setMessage] = useState("");
 
-  // Load user data
+  // Load user data on mount
   useEffect(() => {
     if (user) {
       setFormData({
@@ -34,8 +34,11 @@ export default function Settings({ theme, setTheme }) {
     }
   }, [user]);
 
-  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+  // Handle input changes
+  const handleChange = (e) =>
+    setFormData({ ...formData, [e.target.name]: e.target.value });
 
+  // Handle profile image change
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -44,6 +47,7 @@ export default function Settings({ theme, setTheme }) {
     }
   };
 
+  // Save profile changes including theme
   const handleSave = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -55,6 +59,7 @@ export default function Settings({ theme, setTheme }) {
         if (formData[key]) form.append(key, formData[key]);
       }
       if (profileImage) form.append("profileImage", profileImage);
+      form.append("theme", theme); // send theme to backend
 
       const res = await axios.put(`${API_URL}/api/auth/profile`, form, {
         headers: {
@@ -64,8 +69,8 @@ export default function Settings({ theme, setTheme }) {
       });
 
       if (res.data) {
-        setUser(res.data);
-        setPreviewImage(res.data.profileImage ? `${API_URL}${res.data.profileImage}` : null);
+        setUser(res.data.user); // update user context
+        setPreviewImage(res.data.user.profileImage ? `${API_URL}${res.data.user.profileImage}` : null);
         setMessage("✅ Profile updated successfully!");
         setIsEditing(false);
         setTimeout(() => setMessage(""), 2000);

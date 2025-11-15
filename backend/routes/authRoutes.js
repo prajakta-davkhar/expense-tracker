@@ -1,3 +1,4 @@
+// routes/authRoutes.js
 import express from "express";
 import {
   registerUser,
@@ -31,7 +32,7 @@ router.post("/logout", protect, logoutUser);
 // 👤 Get logged-in user's profile
 router.get("/profile", protect, getProfile);
 
-// ✏️ Update profile details (supports image upload)
+// ✏️ Update profile details (supports image upload & theme)
 router.put("/profile", protect, upload.single("profileImage"), updateProfile);
 
 /* --------------------------------------------

@@ -43,6 +43,11 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "/uploads/profile/default.png",
     },
+    theme: {
+      type: String,
+      enum: ["light", "dark"],
+      default: "light", // Default theme
+    },
   },
   { timestamps: true }
 );

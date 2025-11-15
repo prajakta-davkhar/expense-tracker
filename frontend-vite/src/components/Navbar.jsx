@@ -14,7 +14,7 @@ import {
 import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
 
-export default function Navbar() {
+export default function Navbar({ theme, setTheme }) {
   const { user, logout } = useContext(AuthContext);
   const location = useLocation();
   const navigate = useNavigate();
@@ -22,15 +22,6 @@ export default function Navbar() {
   const [notifications, setNotifications] = useState([]);
   const [error, setError] = useState("");
   const [mobileOpen, setMobileOpen] = useState(false);
-
-  // Theme detection
-  const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
-
-  // Apply theme to document
-  useEffect(() => {
-    document.documentElement.classList.remove(theme === "light" ? "dark" : "light");
-    document.documentElement.classList.add(theme);
-  }, [theme]);
 
   // ✅ Use environment variable
   const API_URL = import.meta.env.VITE_API_BASE_URL;
@@ -94,7 +85,7 @@ export default function Navbar() {
   );
 
   return (
-    <nav className="bg-white dark:bg-gray-900 shadow-md sticky top-0 z-50">
+    <nav className="bg-white dark:bg-gray-900 shadow-md sticky top-0 z-50 transition-colors duration-300">
       <div className="max-w-7xl mx-auto flex justify-between items-center px-6 py-4">
         <Link to="/" className="text-2xl font-bold text-blue-600 dark:text-blue-400">
           Expense Tracker
@@ -129,6 +120,14 @@ export default function Navbar() {
               >
                 Logout
               </button>
+
+              {/* Theme toggle */}
+              <button
+                onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+                className="ml-4 px-3 py-1.5 bg-gray-200 dark:bg-gray-800 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-700 transition-colors"
+              >
+                {theme === "light" ? "🌙 Dark" : "☀️ Light"}
+              </button>
             </>
           ) : (
             <>
@@ -159,7 +158,7 @@ export default function Navbar() {
 
       {/* Mobile Menu */}
       {mobileOpen && (
-        <div className="md:hidden bg-white dark:bg-gray-800 px-6 py-4 flex flex-col gap-4">
+        <div className="md:hidden bg-white dark:bg-gray-800 px-6 py-4 flex flex-col gap-4 transition-colors duration-300">
           {user ? (
             <>
               {navItems.map((item) => (
@@ -185,6 +184,14 @@ export default function Navbar() {
               >
                 <Bell size={20} />
                 Notifications {unreadCount > 0 && `(${unreadCount})`}
+              </button>
+
+              {/* Mobile Theme toggle */}
+              <button
+                onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+                className="mt-2 px-3 py-1.5 bg-gray-200 dark:bg-gray-700 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+              >
+                {theme === "light" ? "🌙 Dark Mode" : "☀️ Light Mode"}
               </button>
             </>
           ) : (

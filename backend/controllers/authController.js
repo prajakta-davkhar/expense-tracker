@@ -2,22 +2,27 @@
 import User from "../models/User.js";
 import jwt from "jsonwebtoken";
 
-// 🔹 Generate JWT
+// 🔹 Generate JWT token
 const generateToken = (id) =>
   jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "30d" });
 
 // -------------------- REGISTER USER --------------------
 export const registerUser = async (req, res) => {
   try {
-    const { name, email, password, phone, address } = req.body;
+    const { name, email, password, phone, address, theme } = req.body;
     if (!name || !email || !password) {
-      return res.status(400).json({ success: false, message: "Name, email & password required" });
+      return res.status(400).json({
+        success: false,
+        message: "Name, email & password required",
+      });
     }
 
     const normalizedEmail = email.toLowerCase().trim();
     const existingUser = await User.findOne({ email: normalizedEmail });
     if (existingUser) {
-      return res.status(400).json({ success: false, message: "User already exists" });
+      return res
+        .status(400)
+        .json({ success: false, message: "User already exists" });
     }
 
     const newUser = await User.create({
@@ -26,6 +31,7 @@ export const registerUser = async (req, res) => {
       password,
       phone: phone || "",
       address: address || "",
+      theme: theme || "light", // default theme
     });
 
     res.status(201).json({
@@ -38,12 +44,17 @@ export const registerUser = async (req, res) => {
         phone: newUser.phone,
         address: newUser.address,
         profileImage: newUser.profileImage || "/uploads/profile/default.png",
+        theme: newUser.theme,
       },
       token: generateToken(newUser._id),
     });
   } catch (error) {
     console.error("Register error:", error.message);
-    res.status(500).json({ success: false, message: "Server error", error: error.message });
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message,
+    });
   }
 };
 
@@ -52,14 +63,20 @@ export const authUser = async (req, res) => {
   try {
     const { email, password } = req.body;
     if (!email || !password) {
-      return res.status(400).json({ success: false, message: "Email & password required" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Email & password required" });
     }
 
     const normalizedEmail = email.toLowerCase().trim();
-    const user = await User.findOne({ email: normalizedEmail }).select("+password");
+    const user = await User.findOne({ email: normalizedEmail }).select(
+      "+password"
+    );
 
     if (!user || !(await user.matchPassword(password))) {
-      return res.status(401).json({ success: false, message: "Invalid email or password" });
+      return res
+        .status(401)
+        .json({ success: false, message: "Invalid email or password" });
     }
 
     res.status(200).json({
@@ -72,43 +89,66 @@ export const authUser = async (req, res) => {
         phone: user.phone || "",
         address: user.address || "",
         profileImage: user.profileImage || "/uploads/profile/default.png",
+        theme: user.theme || "light",
       },
       token: generateToken(user._id),
     });
   } catch (error) {
     console.error("Login error:", error.message);
-    res.status(500).json({ success: false, message: "Server error", error: error.message });
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message,
+    });
   }
 };
 
 // -------------------- GET PROFILE --------------------
 export const getProfile = async (req, res) => {
   try {
-    if (!req.user) return res.status(401).json({ success: false, message: "Not authorized" });
+    if (!req.user)
+      return res
+        .status(401)
+        .json({ success: false, message: "Not authorized" });
 
     const user = await User.findById(req.user._id).select("-password");
-    if (!user) return res.status(404).json({ success: false, message: "User not found" });
+    if (!user)
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
 
     res.status(200).json({ success: true, user });
   } catch (error) {
     console.error("Get profile error:", error.message);
-    res.status(500).json({ success: false, message: "Server error", error: error.message });
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message,
+    });
   }
 };
 
 // -------------------- UPDATE PROFILE --------------------
 export const updateProfile = async (req, res) => {
   try {
-    if (!req.user) return res.status(401).json({ success: false, message: "Not authorized" });
+    if (!req.user)
+      return res
+        .status(401)
+        .json({ success: false, message: "Not authorized" });
 
     const user = await User.findById(req.user._id).select("+password");
-    if (!user) return res.status(404).json({ success: false, message: "User not found" });
+    if (!user)
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
 
     user.name = req.body.name || user.name;
     user.email = req.body.email ? req.body.email.toLowerCase().trim() : user.email;
     user.phone = req.body.phone || user.phone;
     user.address = req.body.address || user.address;
-    if (req.body.password && req.body.password.length >= 6) user.password = req.body.password;
+    if (req.body.password && req.body.password.length >= 6)
+      user.password = req.body.password;
+    if (req.body.theme) user.theme = req.body.theme; // update theme
     if (req.file) user.profileImage = `/uploads/profile/${req.file.filename}`;
 
     const updatedUser = await user.save();
@@ -123,12 +163,17 @@ export const updateProfile = async (req, res) => {
         phone: updatedUser.phone,
         address: updatedUser.address,
         profileImage: updatedUser.profileImage,
+        theme: updatedUser.theme || "light",
       },
       token: generateToken(updatedUser._id),
     });
   } catch (error) {
     console.error("Update profile error:", error.message);
-    res.status(500).json({ success: false, message: "Server error", error: error.message });
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message,
+    });
   }
 };
 
