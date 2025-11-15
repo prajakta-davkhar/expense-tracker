@@ -14,7 +14,7 @@ import {
 import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
 
-export default function Navbar({ theme, setTheme }) {
+export default function Navbar() {
   const { user, logout } = useContext(AuthContext);
   const location = useLocation();
   const navigate = useNavigate();
@@ -23,10 +23,9 @@ export default function Navbar({ theme, setTheme }) {
   const [error, setError] = useState("");
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  // ✅ Use environment variable
   const API_URL = import.meta.env.VITE_API_BASE_URL;
 
-  // 🔹 Fetch notifications
+  // Fetch notifications
   const fetchNotifications = async () => {
     if (!user) return;
     try {
@@ -120,14 +119,6 @@ export default function Navbar({ theme, setTheme }) {
               >
                 Logout
               </button>
-
-              {/* Theme toggle */}
-              <button
-                onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-                className="ml-4 px-3 py-1.5 bg-gray-200 dark:bg-gray-800 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-700 transition-colors"
-              >
-                {theme === "light" ? "🌙 Dark" : "☀️ Light"}
-              </button>
             </>
           ) : (
             <>
@@ -184,14 +175,6 @@ export default function Navbar({ theme, setTheme }) {
               >
                 <Bell size={20} />
                 Notifications {unreadCount > 0 && `(${unreadCount})`}
-              </button>
-
-              {/* Mobile Theme toggle */}
-              <button
-                onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-                className="mt-2 px-3 py-1.5 bg-gray-200 dark:bg-gray-700 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
-              >
-                {theme === "light" ? "🌙 Dark Mode" : "☀️ Light Mode"}
               </button>
             </>
           ) : (

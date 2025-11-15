@@ -8,8 +8,9 @@ export default function AddExpense() {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  // ✅ Always use .env variable
-  const API_URL = import.meta.env.VITE_API_BASE_URL;
+  // ✅ Use environment variable
+  const API_URL = import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, "");
+  if (!API_URL) console.error("❌ VITE_API_BASE_URL missing in .env");
 
   const [formData, setFormData] = useState({
     category: "",
@@ -34,7 +35,7 @@ export default function AddExpense() {
 
     try {
       setLoading(true);
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem("token"); // currently using localStorage
 
       const res = await axios.post(
         `${API_URL}/api/expenses`,
@@ -43,7 +44,6 @@ export default function AddExpense() {
       );
 
       toast.success(res.data.message || "💾 Expense added successfully!");
-
       setFormData({ category: "", amount: "", description: "", date: "" });
       navigate("/reports");
     } catch (err) {
@@ -55,7 +55,7 @@ export default function AddExpense() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
       <div className="bg-white dark:bg-gray-800 shadow-2xl rounded-3xl p-10 w-full max-w-lg">
         <h1 className="text-3xl font-extrabold mb-8 text-center text-blue-600">
           ➕ Add New Expense
@@ -92,6 +92,7 @@ export default function AddExpense() {
               placeholder="Enter amount"
               className="w-full border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 bg-gray-50 dark:bg-gray-700"
               required
+              min={0}
             />
           </div>
 

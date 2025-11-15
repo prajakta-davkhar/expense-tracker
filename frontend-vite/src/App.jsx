@@ -28,7 +28,7 @@ import Signup from "./pages/Signup";
 // 🔹 PrivateRoute to protect authenticated routes
 function PrivateRoute({ children }) {
   const { user, loading } = useContext(AuthContext);
-  if (loading) return null; // Or add a spinner
+  if (loading) return null; // You can replace this with a spinner
   return user ? children : <Navigate to="/login" replace />;
 }
 
@@ -38,37 +38,26 @@ function LayoutWrapper() {
   const hideNavbarRoutes = ["/login", "/signup"];
   const hide = hideNavbarRoutes.includes(location.pathname);
 
-  const { user } = useContext(AuthContext);
-
-  // Global theme state
-  const [theme, setTheme] = useState("light");
-
-  // Load theme from user data if logged in
-  useEffect(() => {
-    if (user?.theme) {
-      setTheme(user.theme);
-    } else {
-      const savedTheme = localStorage.getItem("theme");
-      if (savedTheme) setTheme(savedTheme);
-    }
-  }, [user]);
+  const { user, theme: userTheme, setTheme } = useContext(AuthContext);
 
   // Apply theme class to <html> element
   useEffect(() => {
-    document.documentElement.classList.remove(theme === "light" ? "dark" : "light");
-    document.documentElement.classList.add(theme);
-    localStorage.setItem("theme", theme); // fallback for non-logged-in users
-  }, [theme]);
+    const appliedTheme = userTheme || "light"; // use online theme
+    document.documentElement.classList.remove(appliedTheme === "light" ? "dark" : "light");
+    document.documentElement.classList.add(appliedTheme);
+  }, [userTheme]);
 
-  const toggleTheme = () => setTheme(theme === "light" ? "dark" : "light");
+  const toggleTheme = () => {
+    setTheme(userTheme === "light" ? "dark" : "light");
+  };
 
   return (
     <div
       className={`min-h-screen flex flex-col transition-colors duration-300 ${
-        theme === "dark" ? "bg-gray-900 text-gray-100" : "bg-gray-50 text-gray-900"
+        userTheme === "dark" ? "bg-gray-900 text-gray-100" : "bg-gray-50 text-gray-900"
       }`}
     >
-      {!hide && <Navbar toggleTheme={toggleTheme} currentTheme={theme} />}
+      {!hide && <Navbar toggleTheme={toggleTheme} currentTheme={userTheme} />}
 
       <main className="flex-1 p-6">
         <Routes>
@@ -115,7 +104,7 @@ function LayoutWrapper() {
             path="/settings"
             element={
               <PrivateRoute>
-                <Settings theme={theme} setTheme={setTheme} />
+                <Settings /> {/* Settings reads theme from AuthContext */}
               </PrivateRoute>
             }
           />

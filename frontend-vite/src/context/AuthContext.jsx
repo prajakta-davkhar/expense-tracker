@@ -5,34 +5,36 @@ import axios from "axios";
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null); // user object
+  const [loading, setLoading] = useState(true); // auth loading
+  const [theme, setTheme] = useState("light"); // global theme
 
-  // ✅ API URL (NO LOCALHOST)
+  // ✅ API URL (no localhost)
   const baseURL = import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, "");
-
-  if (!baseURL) {
-    console.error("❌ ERROR: VITE_API_BASE_URL is missing in .env");
-  }
-
+  if (!baseURL) console.error("❌ VITE_API_BASE_URL is missing in .env");
   const API_URL = `${baseURL}/api/auth`;
 
-  // Load user from localStorage
+  // Load user & theme from localStorage (guest fallback)
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     const storedToken = localStorage.getItem("token");
+    const storedTheme = localStorage.getItem("theme");
 
     if (storedUser && storedToken) {
       try {
         const parsedUser = JSON.parse(storedUser);
         setUser(parsedUser);
         axios.defaults.headers.common["Authorization"] = `Bearer ${storedToken}`;
+        if (parsedUser.theme) setTheme(parsedUser.theme); // user theme from backend
       } catch (err) {
         console.error("⚠️ Failed to parse auth data:", err);
         localStorage.removeItem("user");
         localStorage.removeItem("token");
       }
+    } else if (storedTheme) {
+      setTheme(storedTheme); // fallback for guest users
     }
+
     setLoading(false);
   }, []);
 
@@ -45,7 +47,9 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
       setUser(user);
+      if (user.theme) setTheme(user.theme);
 
       return { success: true, user };
     } catch (err) {
@@ -63,7 +67,9 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
       setUser(user);
+      if (user.theme) setTheme(user.theme);
 
       return { success: true, user };
     } catch (err) {
@@ -78,19 +84,28 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem("token");
     delete axios.defaults.headers.common["Authorization"];
     setUser(null);
+    setTheme("light"); // reset theme
   };
 
-  // UPDATE USER
+  // UPDATE USER (profile changes, including theme)
   const updateUser = (updatedUser) => {
     localStorage.setItem("user", JSON.stringify(updatedUser));
     setUser(updatedUser);
+    if (updatedUser.theme) setTheme(updatedUser.theme);
   };
+
+  // SAVE theme for guest users
+  useEffect(() => {
+    if (!user) localStorage.setItem("theme", theme);
+  }, [theme, user]);
 
   return (
     <AuthContext.Provider
       value={{
         user,
         loading,
+        theme,
+        setTheme,
         login,
         signup,
         logout,

@@ -4,8 +4,8 @@ import { AuthContext } from "../context/AuthContext";
 import axios from "axios";
 import { LogOut, Edit3, Save, Moon, Sun } from "lucide-react";
 
-export default function Settings({ theme, setTheme }) {
-  const { user, setUser, logout } = useContext(AuthContext);
+export default function Settings() {
+  const { user, setUser, logout, theme, setTheme } = useContext(AuthContext);
   const API_URL = import.meta.env.VITE_API_BASE_URL;
 
   const [formData, setFormData] = useState({
@@ -20,7 +20,6 @@ export default function Settings({ theme, setTheme }) {
   const [previewImage, setPreviewImage] = useState(null);
   const [message, setMessage] = useState("");
 
-  // Load user data on mount
   useEffect(() => {
     if (user) {
       setFormData({
@@ -34,11 +33,9 @@ export default function Settings({ theme, setTheme }) {
     }
   }, [user]);
 
-  // Handle input changes
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
-  // Handle profile image change
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -47,7 +44,6 @@ export default function Settings({ theme, setTheme }) {
     }
   };
 
-  // Save profile changes including theme
   const handleSave = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -59,7 +55,7 @@ export default function Settings({ theme, setTheme }) {
         if (formData[key]) form.append(key, formData[key]);
       }
       if (profileImage) form.append("profileImage", profileImage);
-      form.append("theme", theme); // send theme to backend
+      form.append("theme", theme); // save theme to backend
 
       const res = await axios.put(`${API_URL}/api/auth/profile`, form, {
         headers: {
