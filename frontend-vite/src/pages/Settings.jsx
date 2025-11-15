@@ -69,7 +69,6 @@ export default function Settings() {
         setPreviewImage(res.data.profileImage ? `${API_URL}${res.data.profileImage}` : null);
         setMessage("✅ Profile updated successfully!");
         setIsEditing(false);
-
         setTimeout(() => setMessage(""), 2000);
       }
     } catch (err) {
@@ -102,13 +101,15 @@ export default function Settings() {
           <img
             src={previewImage || "/placeholder-profile.png"}
             alt="Profile"
-            className="w-28 h-28 rounded-full object-cover border-2 border-indigo-500"
+            className="w-28 h-28 rounded-full object-cover border-2 border-indigo-500 cursor-pointer"
+            onClick={() => isEditing && document.getElementById("fileInput").click()}
           />
           {isEditing && (
             <input
               type="file"
+              id="fileInput"
               onChange={handleImageChange}
-              className="absolute bottom-0 right-0 w-10 h-10 opacity-0 cursor-pointer"
+              className="hidden"
             />
           )}
         </div>
