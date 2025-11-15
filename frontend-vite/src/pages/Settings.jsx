@@ -80,7 +80,7 @@ export default function Settings() {
 
   if (!user) {
     return (
-      <p className="text-center mt-10 text-lg text-red-600">
+      <p className="text-center mt-10 text-lg text-red-600 dark:text-red-400">
         Please login to access settings
       </p>
     );
@@ -88,7 +88,9 @@ export default function Settings() {
 
   return (
     <div className="max-w-2xl mx-auto p-8 bg-white dark:bg-gray-900 rounded-2xl shadow-lg mt-10 transition-colors duration-300">
-      <h1 className="text-3xl font-bold text-center text-blue-600 mb-6">My Profile</h1>
+      <h1 className="text-3xl font-bold text-center text-blue-600 dark:text-blue-400 mb-6">
+        My Profile
+      </h1>
 
       {/* Theme toggle */}
       <div className="flex justify-center mb-6">
@@ -101,6 +103,7 @@ export default function Settings() {
         </button>
       </div>
 
+      {/* Message */}
       {message && (
         <p className="text-center mb-4 font-medium text-gray-700 dark:text-gray-200">{message}</p>
       )}
@@ -136,9 +139,9 @@ export default function Settings() {
               onChange={handleChange}
               disabled={field === "email" || !isEditing}
               placeholder={field === "password" ? "Leave blank to keep old" : ""}
-              className={`w-full mt-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-800 dark:text-white ${
-                field === "email" ? "bg-gray-100 cursor-not-allowed dark:bg-gray-800 dark:text-gray-300" : ""
-              }`}
+              className={`w-full mt-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400
+                bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-300
+                ${field === "email" ? "bg-gray-100 cursor-not-allowed dark:bg-gray-800 dark:text-gray-300" : ""}`}
             />
           </div>
         ))}

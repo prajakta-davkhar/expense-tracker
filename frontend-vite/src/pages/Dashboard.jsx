@@ -81,9 +81,10 @@ export default function Dashboard() {
       <section className="container mx-auto px-6 py-12 lg:py-20">
         {/* HEADER */}
         <div className="flex flex-col lg:flex-row justify-between items-center mb-10">
-          <h1 className="text-4xl lg:text-5xl font-extrabold text-center lg:text-left dark:text-gray-100">
-            📊 Dashboard
-          </h1>
+         <h1 className="text-4xl lg:text-5xl font-extrabold text-center lg:text-left text-gray-900 dark:text-white">
+  📊 Dashboard
+</h1>
+
           <div className="flex gap-4 mt-4 lg:mt-0">
             <Link
               to="/add-expense"

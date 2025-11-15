@@ -106,7 +106,9 @@ export default function Reports() {
 
   return (
     <div className="min-h-screen +bg-gradient-to-br from-blue-50 via-white to-blue-100 dark:from-gray-900 dark:to-gray-800 text-gray-900 dark:text-gray-100 p-6 transition-colors duration-300">
-      <h1 className="text-4xl font-bold text-center mb-8">📑 Expense & Budget Reports</h1>
+  <h1 className="text-4xl font-bold text-center mb-8 text-gray-900 dark:text-white">
+  📑 Expense & Budget Reports
+</h1>
 
       {/* Summary Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
