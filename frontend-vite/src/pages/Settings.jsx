@@ -5,7 +5,7 @@ import { LogOut, Edit3, Save } from "lucide-react";
 
 export default function Settings() {
   const { user, setUser, logout } = useContext(AuthContext);
-  const API_URL = import.meta.env.VITE_API_BASE_URL;
+  const API_URL = import.meta.env.VITE_API_BASE_URL; // backend URL from env
 
   const [formData, setFormData] = useState({
     name: "",
@@ -72,7 +72,7 @@ export default function Settings() {
         setTimeout(() => setMessage(""), 2000);
       }
     } catch (err) {
-      console.error("Profile update error:", err);
+      console.error("Profile update error:", err.response?.data || err.message);
       setMessage("❌ Failed to update profile");
       setTimeout(() => setMessage(""), 2000);
     }
@@ -87,108 +87,79 @@ export default function Settings() {
 
   return (
     <div className="max-w-2xl mx-auto p-8 bg-white dark:bg-gray-900 rounded-2xl shadow-lg mt-10">
-      <h1 className="text-2xl font-bold mb-6 text-center text-indigo-600">⚙️ Settings</h1>
+      <h1 className="text-3xl font-bold text-center text-blue-600 mb-6">My Profile</h1>
 
-      {message && (
-        <p className="text-center mb-4 font-medium text-gray-700 dark:text-gray-200">
-          {message}
-        </p>
-      )}
-
-      <div className="flex flex-col items-center gap-4">
-        {/* Profile Image */}
+      <div className="flex flex-col items-center mb-6">
         <div className="relative">
           <img
-            src={previewImage || "/placeholder-profile.png"}
+            src={previewImage || "https://via.placeholder.com/120"}
             alt="Profile"
-            className="w-28 h-28 rounded-full object-cover border-2 border-indigo-500 cursor-pointer"
-            onClick={() => isEditing && document.getElementById("fileInput").click()}
+            className="w-32 h-32 rounded-full object-cover border-4 border-blue-500 cursor-pointer"
           />
           {isEditing && (
-            <input
-              type="file"
-              id="fileInput"
-              onChange={handleImageChange}
-              className="hidden"
-            />
+            <label className="absolute bottom-0 right-0 bg-blue-600 p-2 rounded-full cursor-pointer">
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleImageChange}
+              />
+              <Edit3 size={18} color="white" />
+            </label>
           )}
         </div>
+      </div>
 
-        {/* Edit/Save Button */}
-        {isEditing ? (
-          <button
-            onClick={handleSave}
-            className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
-          >
-            <Save size={16} /> Save
-          </button>
-        ) : (
+      <div className="space-y-4">
+        {["name", "email", "phone", "address", "password"].map((field) => (
+          <div key={field}>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 capitalize">
+              {field}
+            </label>
+            <input
+              type={field === "password" ? "password" : "text"}
+              name={field}
+              value={formData[field]}
+              onChange={handleChange}
+              disabled={field === "email" || !isEditing}
+              className={`w-full mt-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-800 dark:text-white ${
+                field === "email" ? "bg-gray-100 cursor-not-allowed" : ""
+              }`}
+            />
+          </div>
+        ))}
+      </div>
+
+      <div className="flex justify-between mt-6">
+        {!isEditing ? (
           <button
             onClick={() => setIsEditing(true)}
             className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
           >
-            <Edit3 size={16} /> Edit
+            <Edit3 size={18} /> Edit
+          </button>
+        ) : (
+          <button
+            onClick={handleSave}
+            className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
+          >
+            <Save size={18} /> Save
           </button>
         )}
 
-        {/* Form Fields */}
-        <input
-          type="text"
-          name="name"
-          value={formData.name}
-          onChange={handleChange}
-          disabled={!isEditing}
-          placeholder="Name"
-          className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500"
-        />
-
-        <input
-          type="email"
-          name="email"
-          value={formData.email}
-          disabled
-          placeholder="Email"
-          className="w-full border rounded-lg px-3 py-2 bg-gray-100 cursor-not-allowed"
-        />
-
-        <input
-          type="text"
-          name="phone"
-          value={formData.phone}
-          onChange={handleChange}
-          disabled={!isEditing}
-          placeholder="Phone"
-          className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500"
-        />
-
-        <input
-          type="text"
-          name="address"
-          value={formData.address}
-          onChange={handleChange}
-          disabled={!isEditing}
-          placeholder="Address"
-          className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500"
-        />
-
-        <input
-          type="password"
-          name="password"
-          value={formData.password}
-          onChange={handleChange}
-          disabled={!isEditing}
-          placeholder="New Password (leave blank to keep old)"
-          className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500"
-        />
-
-        {/* Logout Button */}
         <button
           onClick={logout}
-          className="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 mt-2"
+          className="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700"
         >
-          <LogOut size={16} /> Logout
+          <LogOut size={18} /> Logout
         </button>
       </div>
+
+      {message && (
+        <p className="mt-4 text-center text-sm text-gray-600 dark:text-gray-400">
+          {message}
+        </p>
+      )}
     </div>
   );
 }
