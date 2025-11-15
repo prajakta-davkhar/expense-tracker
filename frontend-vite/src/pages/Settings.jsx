@@ -114,13 +114,22 @@ export default function Settings() {
           )}
         </div>
 
-        {/* Edit Button */}
-        <button
-          onClick={() => setIsEditing(!isEditing)}
-          className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-        >
-          <Edit3 size={16} /> {isEditing ? "Cancel" : "Edit"}
-        </button>
+        {/* Edit/Save Button */}
+        {isEditing ? (
+          <button
+            onClick={handleSave}
+            className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
+          >
+            <Save size={16} /> Save
+          </button>
+        ) : (
+          <button
+            onClick={() => setIsEditing(true)}
+            className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+          >
+            <Edit3 size={16} /> Edit
+          </button>
+        )}
 
         {/* Form Fields */}
         <input
@@ -171,16 +180,6 @@ export default function Settings() {
           placeholder="New Password (leave blank to keep old)"
           className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500"
         />
-
-        {/* Save Button */}
-        {isEditing && (
-          <button
-            onClick={handleSave}
-            className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 mt-4"
-          >
-            <Save size={16} /> Save
-          </button>
-        )}
 
         {/* Logout Button */}
         <button
