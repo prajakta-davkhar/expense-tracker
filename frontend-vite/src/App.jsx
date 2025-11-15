@@ -1,5 +1,5 @@
 // src/App.jsx
-import React, { useContext } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -25,22 +25,44 @@ import NotificationPage from "./pages/NotificationPage";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 
-// 🔹 PrivateRoute to protect routes
+// 🔹 PrivateRoute to protect authenticated routes
 function PrivateRoute({ children }) {
   const { user, loading } = useContext(AuthContext);
-  if (loading) return null; // Or a spinner
+  if (loading) return null; // Or show a spinner/loading
   return user ? children : <Navigate to="/login" replace />;
 }
 
-// 🔹 Layout wrapper to hide Navbar/Footer on login/signup
+// 🔹 Layout wrapper to handle Navbar/Footer visibility and theme
 function LayoutWrapper() {
   const location = useLocation();
   const hideNavbarRoutes = ["/login", "/signup"];
   const hide = hideNavbarRoutes.includes(location.pathname);
 
+  // Global theme state
+  const [theme, setTheme] = useState("light");
+
+  // Load theme from localStorage
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme) setTheme(savedTheme);
+  }, []);
+
+  // Apply theme to document root
+  useEffect(() => {
+    document.documentElement.classList.remove(theme === "light" ? "dark" : "light");
+    document.documentElement.classList.add(theme);
+    localStorage.setItem("theme", theme);
+  }, [theme]);
+
+  const toggleTheme = () => setTheme(theme === "light" ? "dark" : "light");
+
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50 text-gray-900">
-      {!hide && <Navbar />}
+    <div
+      className={`min-h-screen flex flex-col transition-colors duration-300 ${
+        theme === "dark" ? "bg-gray-900 text-gray-100" : "bg-gray-50 text-gray-900"
+      }`}
+    >
+      {!hide && <Navbar toggleTheme={toggleTheme} currentTheme={theme} />}
 
       <main className="flex-1 p-6">
         <Routes>
@@ -87,7 +109,7 @@ function LayoutWrapper() {
             path="/settings"
             element={
               <PrivateRoute>
-                <Settings />
+                <Settings toggleTheme={toggleTheme} currentTheme={theme} />
               </PrivateRoute>
             }
           />

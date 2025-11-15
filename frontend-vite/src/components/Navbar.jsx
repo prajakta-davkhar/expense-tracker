@@ -23,7 +23,16 @@ export default function Navbar() {
   const [error, setError] = useState("");
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  // ✅ Use environment variable or fallback (NO localhost after deploy)
+  // Theme detection
+  const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
+
+  // Apply theme to document
+  useEffect(() => {
+    document.documentElement.classList.remove(theme === "light" ? "dark" : "light");
+    document.documentElement.classList.add(theme);
+  }, [theme]);
+
+  // ✅ Use environment variable
   const API_URL = import.meta.env.VITE_API_BASE_URL;
 
   // 🔹 Fetch notifications
@@ -50,7 +59,6 @@ export default function Navbar() {
     }
   };
 
-  // 🔹 Auto refresh notifications every 10 sec
   useEffect(() => {
     if (user) {
       fetchNotifications();
@@ -61,7 +69,6 @@ export default function Navbar() {
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
-  // Navigation items
   const navItems = [
     { name: "Home", path: "/", icon: <Home size={20} /> },
     { name: "Dashboard", path: "/dashboard", icon: <Wallet size={20} /> },
