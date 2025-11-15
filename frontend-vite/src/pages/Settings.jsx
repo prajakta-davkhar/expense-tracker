@@ -54,11 +54,9 @@ export default function Settings() {
 
       const form = new FormData();
       for (const key in formData) {
-        // Skip empty password
         if (key === "password" && !formData[key]) continue;
         if (formData[key]) form.append(key, formData[key]);
       }
-
       if (profileImage) form.append("profileImage", profileImage);
 
       const res = await axios.put(`${API_URL}/api/auth/profile`, form, {
@@ -75,10 +73,14 @@ export default function Settings() {
         );
         setMessage("✅ Profile updated successfully!");
         setIsEditing(false);
+
+        // Auto hide message after 2 seconds
+        setTimeout(() => setMessage(""), 2000);
       }
     } catch (err) {
       console.error("Profile update error:", err);
       setMessage("❌ Failed to update profile");
+      setTimeout(() => setMessage(""), 2000);
     }
   };
 
@@ -90,7 +92,7 @@ export default function Settings() {
     );
 
   return (
-    <div className="max-w-2xl mx-auto p-8 bg-white dark:bg-gray-900 rounded-2xl shadow-lg mt-10">
+    <div className="max-w-md mx-auto p-8 bg-white dark:bg-gray-900 rounded-2xl shadow-lg mt-10">
       <h1 className="text-2xl font-bold mb-6 text-center text-indigo-600">
         ⚙️ Settings
       </h1>
@@ -101,17 +103,29 @@ export default function Settings() {
         </p>
       )}
 
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 items-center">
         {/* Profile Image */}
         <div className="flex flex-col items-center">
-          {previewImage && (
+          {previewImage ? (
             <img
               src={previewImage}
               alt="Profile"
-              className="w-28 h-28 rounded-full mb-2 object-cover"
+              className="w-32 h-32 rounded-full mb-2 object-cover border-2 border-indigo-500"
+            />
+          ) : (
+            <div className="w-32 h-32 rounded-full mb-2 bg-gray-300 flex items-center justify-center text-gray-600 text-xl">
+              No Image
+            </div>
+          )}
+
+          {isEditing && (
+            <input
+              type="file"
+              onChange={handleImageChange}
+              accept="image/*"
+              className="mt-2"
             />
           )}
-          {isEditing && <input type="file" onChange={handleImageChange} />}
         </div>
 
         {/* Form Fields */}
@@ -124,7 +138,6 @@ export default function Settings() {
           placeholder="Name"
           className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500"
         />
-
         <input
           type="email"
           name="email"
@@ -133,7 +146,6 @@ export default function Settings() {
           placeholder="Email"
           className="w-full border rounded-lg px-3 py-2 bg-gray-100 cursor-not-allowed"
         />
-
         <input
           type="text"
           name="phone"
@@ -143,7 +155,6 @@ export default function Settings() {
           placeholder="Phone"
           className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500"
         />
-
         <input
           type="text"
           name="address"
@@ -153,7 +164,6 @@ export default function Settings() {
           placeholder="Address"
           className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500"
         />
-
         <input
           type="password"
           name="password"
@@ -165,7 +175,7 @@ export default function Settings() {
         />
 
         {/* Action Buttons */}
-        <div className="flex justify-between mt-4">
+        <div className="flex justify-between w-full mt-4">
           {isEditing ? (
             <button
               onClick={handleSave}
